@@ -1,0 +1,136 @@
+<html>
+
+<head>
+    <title>Web Sockets</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js" charset="utf-8"></script>
+    <link href="main.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+
+</head>
+
+<body>
+
+  <script type="text/javascript">
+  function showHideDiv(ele) {
+    var srcElement = document.getElementById(ele);
+    if (srcElement != null) {
+      if (srcElement.style.display == "block") {
+        srcElement.style.display = 'none';
+      }
+      else {
+        srcElement.style.display = 'block';
+      }
+      return false;
+    }
+  }
+</script>
+
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+<div id="mario-chat">
+      <div id="chat-window">
+        <div id="output"></div>
+        <div id="feedback"></div>
+      </div>
+      <input id="handle" type="text" placeholder="Handle" />
+      <input id="message" type="text" placeholder="Message" />
+      <button id="send">Send</button>
+    </div>
+    <script src="/chat.js" charset="utf-8"></script>
+
+        <input type="file" id="my-file" accept="image/*">
+        <label for="my-file"> Upload image</label>
+
+        <!-- <script src="/socket.io/socket.io.js"></script> -->
+        <script type="text/javascript">
+        // var socket = io.connect('http://localhost:5000');
+
+        var file = document.getElementById('my-file'),
+            handle = document.getElementById('handle');
+
+
+        file.addEventListener('change', function () {
+            if (!file.files.length) {
+                return;
+            }
+
+            var firstFile = file.files[0],
+                reader = new FileReader();
+
+            reader.onloadend = function () {
+                socket.emit('upload-image', {
+                    name: firstFile.name,
+                    data: reader.result,
+                    h: handle.value
+
+                });
+            };
+
+            reader.readAsArrayBuffer(firstFile);
+        });
+
+        socket.on('image-uploaded', function (message) {
+            // var img = document.createElement('img');
+            // img.setAttribute('src', message.name);
+            // img.setAttribute('height', '100px');
+            // document.body.appendChild(img);
+
+            var elem = document.createElement("img");
+            elem.setAttribute('src', message.name);
+            elem.setAttribute('height', '100px');
+            // elem.setAttribute("width", "1024");
+            elem.setAttribute("alt", "image");
+            // document.getElementById("output").appendChild('<p><strong>' + data.handle + ':</strong>' + '<p><strong>' + data.handle + ':</strong>' + data.message + '</p>' + "\n" + elem);
+            document.getElementById("output").innerHTML += '<p><strong>' + message.h + ' :</p>';
+            document.getElementById("output").appendChild(elem)
+        });
+        </script>
+
+<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+
+		<input type="button" value="Start Video" id="startvideobutton" onClick="showHideDiv('divMsg')"/>
+    <div id = "divMsg" style="display:none;" class="container-fluid">
+        <div class="row h-10 w-100">
+            <div class="col">
+                <select id="filter" class="w-100 bg-dark text-light ml-2 mt-2 select font-weight-bold border">
+                    <option value="none">Normal</option>
+                    <option value="grayscale(100%)">B & W</option>
+                    <option value="sepia(100%)">Old School</option>
+                    <option value="contrast(150%)">Lumination</option>
+                    <option value="blur(20px)">Hidden Mist</option>
+                    <option value="invert(100%)">Dracula</option>
+                    <option value="hue-rotate(180deg">X-men Beast</option>
+                    <option value="saturate(25)">Super Saiyan God</option>
+                </select>
+            </div>
+            <!-- <div class="col">
+                <div class="float-right mt-3">
+                    <input class="form-check-input" type="checkbox" id="theme"> -->
+                    <!-- <label class="form-check-label" for="theme">
+                        Dark Theme
+                    </label> -->
+                <!-- </div>
+            </div> -->
+        </div>
+        <div class="row h-90 w-100">
+            <div class="col-12 col-sm-6 d-flex justify-content-center">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <video class="embed-responsive-item" muted></video>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 d-flex justify-content-center">
+                <div id="peerDiv" class="embed-responsive embed-responsive-16by9">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="bundle.js"></script>
+</body>
+
+</html>
